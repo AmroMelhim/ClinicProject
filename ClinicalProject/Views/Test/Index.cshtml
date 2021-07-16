@@ -1,0 +1,23 @@
+﻿@model List<Specialization>
+    <a asp-action="Create"><strong>Create</strong></a>
+    <div class="container">
+        @foreach (var temp in Model)
+        {
+
+            <div class="row">
+                <div class="col">
+                    <p>@temp.Id</p>
+                </div>
+                <div class="col">
+                    <p>@temp.SpecializationName</p>
+                </div>
+                <div>
+                    <a asp-action="Detail" asp-route-id="@temp.Id">Details</a>
+                    <a asp-action="Delete" asp-route-id="@temp.Id">Delete</a>
+
+                </div>
+            </div>
+
+
+        }
+    </div>

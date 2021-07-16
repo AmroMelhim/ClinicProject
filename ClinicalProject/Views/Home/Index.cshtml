@@ -1,0 +1,61 @@
+﻿@model IEnumerable<ClinicProject.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+@if (!Model.Any())
+{
+    <h3>No Appointments</h3>
+}
+else
+{
+<label class="h1">There Are  @Model.Count() Appointments</label>
+   
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Doctor)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patient)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Reservation)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AppointmentType.Type)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Doctor.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Patient.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Reservation)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AppointmentType.Type)
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-controller="Appointments" asp-route-id="@item.Id">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
