@@ -20,9 +20,75 @@ namespace ClinicProject.Controllers
         }
 
         // GET: Patients
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string order, string SearchString, string CurrentFilter, int? PageNumber)
         {
-            return View(await _context.Patients.ToListAsync());
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(order) ? "name_desc" : "";
+            ViewData["NameSortParm2"] = order == "LastName" ? "LastName_desc" : "LastName";
+            ViewData["AddressSortParm"] = order == "Address" ? "Address_desc" : "Address";
+            ViewData["BirthDaySortParm"] = order == "BirthDay" ? "BirthDay_desc" : "BirthDay";
+            ViewData["RegistrationSortParm"] = order == "Registration" ? "Registration_desc" : "Registration";
+            ViewData["CurrentSort"] = order;
+
+            if (SearchString != null)
+            {
+                PageNumber = 1;
+            }
+            else
+            {
+                SearchString = CurrentFilter;
+            }
+
+
+            ViewData["CurrentFilter"] = SearchString;
+
+
+
+            var applicationDBContext = from s in _context.Patients select s;
+
+            if (!String.IsNullOrEmpty(SearchString))
+            {
+
+                applicationDBContext = applicationDBContext.Where(s => s.FirstName.Contains(SearchString) || SearchString.Contains(s.LastName)
+                || SearchString.Contains(s.FirstName));
+            }
+
+            switch (order)
+            {
+                case "name_desc":
+                    applicationDBContext = applicationDBContext.OrderByDescending(s => s.FirstName);
+                    break;
+                case "LastName":
+                    applicationDBContext = applicationDBContext.OrderBy(s => s.LastName);
+                    break;
+                case "LastName_desc":
+                    applicationDBContext = applicationDBContext.OrderByDescending(s => s.LastName);
+                    break;
+
+                case "Address":
+                    applicationDBContext = applicationDBContext.OrderBy(s => s.Address);
+                    break;
+                case "Address_desc":
+                    applicationDBContext = applicationDBContext.OrderByDescending(s => s.Address);
+                    break;
+                case "BirthDay":
+                    applicationDBContext = applicationDBContext.OrderBy(s => s.BirthDay);
+                    break;
+                case "BirthDay_desc":
+                    applicationDBContext = applicationDBContext.OrderByDescending(s => s.BirthDay);
+                    break;
+                case "Registration":
+                    applicationDBContext = applicationDBContext.OrderBy(s => s.RegistrationDate);
+                    break;
+                case "Registration_desc":
+                    applicationDBContext = applicationDBContext.OrderByDescending(s => s.RegistrationDate);
+                    break;
+
+                default:
+                    applicationDBContext = applicationDBContext.OrderBy(s => s.FirstName);
+                    break;
+            }
+            int pageSize = 3;
+            return View(await PaginatedList<Patient>.CreateAsync(applicationDBContext.AsNoTracking(), PageNumber ?? 1, pageSize));
         }
 
         // GET: Patients/Details/5
