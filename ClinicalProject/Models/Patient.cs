@@ -31,6 +31,7 @@ namespace ClinicProject.Models
         [RegularExpression("^\\d{9}$")]
         public string SSN { get; set; }
 
+        public string Country { get; set; }
         public List<MedicalHistory> MedicalHistories { get; set; }
         public List<Appointment> Appointments { get; set; }
 

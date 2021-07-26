@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClinicProject.Data;
 using ClinicProject.Models;
+using System.Net;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace ClinicProject.Controllers
 {
@@ -19,9 +23,12 @@ namespace ClinicProject.Controllers
             _context = context;
         }
 
+   
         // GET: Doctors
         public async Task<IActionResult> Index(string order ,string SearchString,string CurrentFilter,int? PageNumber)
         {
+        
+
             ViewData["NameSortParm"] = String.IsNullOrEmpty(order) ? "name_desc" : "";
             ViewData["NameSortParm2"] = order == "LastName" ? "LastName_desc" : "LastName";
             ViewData["AddressSortParm"] = order == "Address" ? "Address_desc" : "Address";
@@ -114,9 +121,11 @@ namespace ClinicProject.Controllers
         }
 
         // GET: Doctors/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
+            
             ViewData["SpecializationId"] = new SelectList(_context.Specializations, "Id", "SpecializationName");
+            ViewData["CountryModel"] = new SelectList(await this.GetCountry(), "name", "name");
             return View();
         }
 
@@ -235,6 +244,27 @@ namespace ClinicProject.Controllers
                 return NotFound();
             }
             return View(doctor);
+        }
+
+        public async Task<IEnumerable<CountryModel>> GetCountry()
+        {
+            string temp = "https://restcountries.eu/rest/v2/all";
+            List<CountryModel> country = new List<CountryModel>();
+
+            using (var client =new HttpClient())
+            {
+                client.BaseAddress = new Uri(temp);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage Res = await client.GetAsync(temp);
+                if (Res.IsSuccessStatusCode)
+                {
+                    var CountryResponse = Res.Content.ReadAsStringAsync().Result;
+                    country = JsonConvert.DeserializeObject<List<CountryModel>>(CountryResponse);
+                }
+            }  
+            return country;
+
         }
 
     }

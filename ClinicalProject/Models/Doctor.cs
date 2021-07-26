@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -31,12 +32,13 @@ namespace ClinicProject.Models
         [RegularExpression("^[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?:[ ]?[0-9]{1,2})?$")]
         public string IBAN { get; set; }
         
+        public string Country { get; set; }
         public long SpecializationId { get; set; }
         [ForeignKey("SpecializationId")]
      
         public Specialization Specialization { get; set; }
-        public List<Appointment> Appointments { get; set; }
-
+        public List<Appointment> Appointments { get; set; } 
+       
         public string DoctorFullName
         {
             get { return $"{FirstName }{LastName}"; }

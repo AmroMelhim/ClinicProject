@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.OpenApi.Models;
-
+using System.Net.Http;
 
 namespace ClinicProject
 {
@@ -30,6 +30,9 @@ namespace ClinicProject
             var connString = Configuration.GetConnectionString("Default");
             services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(connString));
             services.AddControllersWithViews();
+            services.AddRazorPages();
+           
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -65,6 +68,8 @@ namespace ClinicProject
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                    endpoints.MapRazorPages();
+
             });
         }
     }

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClinicProject.Data;
 using ClinicProject.Models;
+using System.Net.Http;
+using Unity;
 
 namespace ClinicProject.API
 {
@@ -25,7 +27,7 @@ namespace ClinicProject.API
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctors()
         {
-            return await _context.Doctors.Include(a=>a.Specialization).ToListAsync();
+            return await _context.Doctors.Include(a => a.Specialization).ToListAsync();
         }
 
         // GET: api/Doctors/5
@@ -104,5 +106,12 @@ namespace ClinicProject.API
         {
             return _context.Doctors.Any(e => e.Id == id);
         }
+
+
+       
+
+
+
+
     }
 }
