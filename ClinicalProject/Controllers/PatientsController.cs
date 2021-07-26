@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClinicProject.Data;
 using ClinicProject.Models;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace ClinicProject.Controllers
 {
@@ -110,8 +113,9 @@ namespace ClinicProject.Controllers
         }
 
         // GET: Patients/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
+            ViewData["CountryModel"] = new SelectList(await this.GetCountry(), "name", "name");
             return View();
         }
 
@@ -120,7 +124,7 @@ namespace ClinicProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,BirthDay,Gender,PhoneNumber,Email,Address,RegistrationDate,SSN")] Patient patient)
+        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,BirthDay,Gender,PhoneNumber,Email,Address,RegistrationDate,SSN,Country")] Patient patient)
         {
             if (ModelState.IsValid)
             {
@@ -128,6 +132,7 @@ namespace ClinicProject.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CountryModel"] = new SelectList(await this.GetCountry(), "name", "name");
             return View(patient);
         }
 
@@ -144,6 +149,7 @@ namespace ClinicProject.Controllers
             {
                 return NotFound();
             }
+            ViewData["CountryModel"] = new SelectList(await this.GetCountry(), "name", "name");
             return View(patient);
         }
 
@@ -152,7 +158,7 @@ namespace ClinicProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,FirstName,LastName,BirthDay,Gender,PhoneNumber,Email,Address,RegistrationDate,SSN")] Patient patient)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,FirstName,LastName,BirthDay,Gender,PhoneNumber,Email,Address,RegistrationDate,SSN,Country")] Patient patient)
         {
             if (id != patient.Id)
             {
@@ -179,6 +185,8 @@ namespace ClinicProject.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CountryModel"] = new SelectList(await this.GetCountry(), "name", "name");
+
             return View(patient);
         }
 
@@ -215,5 +223,27 @@ namespace ClinicProject.Controllers
         {
             return _context.Patients.Any(e => e.Id == id);
         }
+
+        public async Task<IEnumerable<CountryModel>> GetCountry()
+        {
+            string temp = "https://restcountries.eu/rest/v2/all";
+            List<CountryModel> country = new List<CountryModel>();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(temp);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage Res = await client.GetAsync(temp);
+                if (Res.IsSuccessStatusCode)
+                {
+                    var CountryResponse = Res.Content.ReadAsStringAsync().Result;
+                    country = JsonConvert.DeserializeObject<List<CountryModel>>(CountryResponse);
+                }
+            }
+            return country;
+
+        }
+
     }
 }

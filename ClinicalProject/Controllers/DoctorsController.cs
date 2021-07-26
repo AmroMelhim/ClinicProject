@@ -134,7 +134,7 @@ namespace ClinicProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Address,Notes,MonthlySalary,PhoneNumber,Email,IBAN,SpecializationId")] Doctor doctor)
+        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Address,Notes,MonthlySalary,PhoneNumber,Email,IBAN,Country,SpecializationId")] Doctor doctor)
         {
             if (ModelState.IsValid)
             {
@@ -143,6 +143,8 @@ namespace ClinicProject.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName");
+            ViewData["CountryModel"] = new SelectList(await this.GetCountry(), "name", "name");
+
             return View(doctor);
         }
 
@@ -160,6 +162,8 @@ namespace ClinicProject.Controllers
                 return NotFound();
             }
             ViewData["SpecializationId"] = new SelectList(_context.Specializations, "Id", "Id", doctor.SpecializationId);
+            ViewData["CountryModel"] = new SelectList(await this.GetCountry(), "name", "name");
+
             return View(doctor);
         }
 
@@ -168,7 +172,7 @@ namespace ClinicProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,FirstName,LastName,Address,Notes,MonthlySalary,PhoneNumber,Email,IBAN,SpecializationId")] Doctor doctor)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,FirstName,LastName,Address,Notes,MonthlySalary,PhoneNumber,Email,IBAN,Country,SpecializationId")] Doctor doctor)
         {
             if (id != doctor.Id)
             {
@@ -196,6 +200,8 @@ namespace ClinicProject.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["SpecializationId"] = new SelectList(_context.Specializations, "Id", "Id", doctor.SpecializationId);
+            ViewData["CountryModel"] = new SelectList(await this.GetCountry(), "name", "name");
+
             return View(doctor);
         }
 
